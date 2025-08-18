@@ -1,12 +1,12 @@
 import express from "express";
-import { createSubcategory, deleteSubcategory, updateSubcategory } from "../controllers/subCategoryController.js"
+import { createSubcategory, deleteSubcategory, getSubcategories, updateSubcategory } from "../controllers/subCategoryController.js"
 import { verifyAccessToken } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
 router.post("/create-subcategory", verifyAccessToken, createSubcategory);
 
-// router.get("/get-subcategories", verifyAccessToken, getCategories);
+router.get("/get-subcategories", verifyAccessToken, getSubcategories);
 
 router.put("/update-subcategory/:id",verifyAccessToken,updateSubcategory);
 

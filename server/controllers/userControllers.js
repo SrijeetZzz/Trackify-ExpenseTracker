@@ -45,21 +45,27 @@ export const signup = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-
     const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ message: "Invalid credentials" });
+    if (!user) return res.status(401).json({ message: "Invalid credentials" });
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch)
-      return res.status(400).json({ message: "Invalid credentials" });
+      return res.status(401).json({ message: "Invalid credentials" });
 
     const accessToken = generateAccessToken(user);
-    const refreshToken = generateRefreshToken({ userId: user._id.toString() });
+    const refreshToken = generateRefreshToken(user);
 
     user.refreshToken = refreshToken;
     await user.save();
 
-    res.json({ accessToken, refreshToken });
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "Lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    res.json({ accessToken });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -90,7 +96,8 @@ export const logout = async (req, res) => {
 
 export const refreshToken = async (req, res) => {
   try {
-    const { refreshToken } = req.body;
+    const refreshToken = req.cookies.refreshToken;
+    console.log(refreshToken)
     if (!refreshToken)
       return res.status(401).json({ message: "Refresh token missing" });
 

@@ -1,4 +1,5 @@
 import Subcategory from "../models/subcategories.js";
+import mongoose from "mongoose";
 
 // Create a new subcategory
 export const createSubcategory = async (req, res) => {
@@ -18,16 +19,45 @@ export const createSubcategory = async (req, res) => {
 };
 
 
+//get all categories of a single category of a user
+export const getSubcategories = async (req, res) => {
+  try {
+    const { categoryId } = req.query; 
 
-// Get all subcategories (optionally populate category)
-// export const getSubcategories = async (req, res) => {
-//   try {
-//     const subcategories = await Subcategory.find().populate("categoryId");
-//     res.json(subcategories);
-//   } catch (err) {
-//     res.status(500).json({ message: err.message });
-//   }
-// };
+    const pipeline = [];
+
+    if (categoryId) {
+      pipeline.push({
+        $match: { categoryId: new mongoose.Types.ObjectId(categoryId) }
+      });
+    }
+
+    // if (userId) {
+    //   pipeline.push({
+    //     $match: { userId: new mongoose.Types.ObjectId(userId) }
+    //   });
+    // }
+
+    // optional populate equivalent (join with Category collection)
+    pipeline.push({
+      $lookup: {
+        from: "categories",              // collection name in MongoDB
+        localField: "categoryId",        // field in Subcategory
+        foreignField: "_id",             // field in Category
+        as: "category"
+      }
+    });
+
+    // unwind if you want category as single object instead of array
+    pipeline.push({ $unwind: "$category" });
+
+    const subcategories = await Subcategory.aggregate(pipeline);
+
+    res.json(subcategories);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 
 
 

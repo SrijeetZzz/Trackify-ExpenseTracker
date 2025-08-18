@@ -2,8 +2,10 @@ import jwt from "jsonwebtoken"
 
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
 export const verifyAccessToken =(req,res,next)=>{
+    
     const authHeader = req.headers["authorization"]
     const token = authHeader && authHeader.split(" ")[1];
+    // console.log(token)
 
     if(!token) return res.status(401).json({message:"Access token missing"});
 

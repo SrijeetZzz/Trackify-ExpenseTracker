@@ -3,11 +3,11 @@ import Category from "../models/categories.js";
 // Create a new category
 export const createCategory = async (req, res) => {
   try {
-    const { name } = req.body;
-    const existingCategory = await Category.findOne({ name });
+    const { name,userId } = req.body;
+    const existingCategory = await Category.findOne({ name , userId});
     if (existingCategory) return res.status(400).json({ message: "Category already exists" });
 
-    const category = new Category({ name });
+    const category = new Category({ name ,userId});
     await category.save();
 
     res.status(201).json(category);
@@ -19,7 +19,8 @@ export const createCategory = async (req, res) => {
 // Get all categories
 export const getCategories = async (req, res) => {
   try {
-    const categories = await Category.find();
+    const userId = req.user.userId;
+    const categories = await Category.find({userId});
     res.json(categories);
   } catch (err) {
     res.status(500).json({ message: err.message });

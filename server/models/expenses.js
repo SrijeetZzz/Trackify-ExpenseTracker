@@ -31,7 +31,8 @@ const expense = new mongoose.Schema({
         default:true,
     },
     paymentMode:{
-        type:Number,
+        type:String,
+        enum: ["Cash", "Card", "UPI", "Other"],
         required:true,
     },
     reccurExpense:{
@@ -45,7 +46,6 @@ const expense = new mongoose.Schema({
     occuranceDate:{
         type:Date,
     }
-
 })
 
 export default mongoose.model("Expense",expense)

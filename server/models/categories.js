@@ -6,6 +6,10 @@ const categoryschema = new mongoose.Schema({
         require:true,
         unique:true,
         trim:true
+    },
+    userId:{
+        type: mongoose.Schema.Types.ObjectId,
+        required:true,
     }
 })
 
