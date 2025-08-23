@@ -11,7 +11,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 import { api } from "../utils/axiosInstance";
 import { Pencil } from "lucide-react";
 
@@ -66,7 +72,9 @@ const Expense = () => {
         setSubcategories([]);
         return;
       }
-      const res = await api.get(`/subcategory/get-subcategories?categoryId=${category}`);
+      const res = await api.get(
+        `/subcategory/get-subcategories?categoryId=${category}`
+      );
       setSubcategories(res.data || []);
     } catch (err) {
       console.error(err);
@@ -80,8 +88,10 @@ const Expense = () => {
       const params: any = {
         page,
         categoryId: selectedCategory === "all" ? undefined : selectedCategory,
-        subcategoryId: selectedSubcategory === "all" ? undefined : selectedSubcategory,
-        paymentMode: selectedPaymentMode === "all" ? undefined : selectedPaymentMode,
+        subcategoryId:
+          selectedSubcategory === "all" ? undefined : selectedSubcategory,
+        paymentMode:
+          selectedPaymentMode === "all" ? undefined : selectedPaymentMode,
         sortField,
         sortOrder,
       };
@@ -96,6 +106,9 @@ const Expense = () => {
       setLoading(false);
     }
   };
+  useEffect(() => {
+    fetchExpenses(currentPage);
+  }, [currentPage]);
 
   useEffect(() => {
     fetchCategories();
@@ -109,7 +122,13 @@ const Expense = () => {
 
   useEffect(() => {
     fetchExpenses(1);
-  }, [selectedCategory, selectedSubcategory, selectedPaymentMode, sortField, sortOrder]);
+  }, [
+    selectedCategory,
+    selectedSubcategory,
+    selectedPaymentMode,
+    sortField,
+    sortOrder,
+  ]);
 
   if (loading) return <div>Loading...</div>;
 
@@ -142,11 +161,14 @@ const Expense = () => {
               <TableHead>
                 <div className="flex items-center gap-2">
                   Date
-                  <Select value={dateSort} onValueChange={(val) => {
-                    setSortField("date");
-                    setSortOrder(val as "asc" | "desc");
-                    setDateSort(val as "asc" | "desc");
-                  }}>
+                  <Select
+                    value={dateSort}
+                    onValueChange={(val) => {
+                      setSortField("date");
+                      setSortOrder(val as "asc" | "desc");
+                      setDateSort(val as "asc" | "desc");
+                    }}
+                  >
                     <SelectTrigger className="w-24">
                       <SelectValue />
                     </SelectTrigger>
@@ -160,30 +182,40 @@ const Expense = () => {
 
               {/* Category filter */}
               <TableHead>
-                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                <Select
+                  value={selectedCategory}
+                  onValueChange={setSelectedCategory}
+                >
                   <SelectTrigger className="w-32">
                     <SelectValue placeholder="Category" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All</SelectItem>
-                    {categories.map(cat => (
-                      <SelectItem key={cat._id} value={cat._id}>{cat.name}</SelectItem>
-                    ))
-                    }
+                    {categories.map((cat) => (
+                      <SelectItem key={cat._id} value={cat._id}>
+                        {cat.name}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </TableHead>
 
               {/* Subcategory filter */}
               <TableHead>
-                <Select value={selectedSubcategory} onValueChange={setSelectedSubcategory} disabled={!selectedCategory || selectedCategory === "all"}>
+                <Select
+                  value={selectedSubcategory}
+                  onValueChange={setSelectedSubcategory}
+                  disabled={!selectedCategory || selectedCategory === "all"}
+                >
                   <SelectTrigger className="w-32">
                     <SelectValue placeholder="Subcategory" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All</SelectItem>
-                    {subcategories.map(sub => (
-                      <SelectItem key={sub._id} value={sub._id}>{sub.name}</SelectItem>
+                    {subcategories.map((sub) => (
+                      <SelectItem key={sub._id} value={sub._id}>
+                        {sub.name}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -191,7 +223,10 @@ const Expense = () => {
 
               {/* Payment Method filter */}
               <TableHead>
-                <Select value={selectedPaymentMode} onValueChange={setSelectedPaymentMode}>
+                <Select
+                  value={selectedPaymentMode}
+                  onValueChange={setSelectedPaymentMode}
+                >
                   <SelectTrigger className="w-32">
                     <SelectValue placeholder="Payment Mode" />
                   </SelectTrigger>
@@ -208,11 +243,14 @@ const Expense = () => {
               <TableHead className="text-center">
                 <div className="flex items-center gap-2 justify-center">
                   Amount
-                  <Select value={amountSort} onValueChange={(val) => {
-                    setSortField("amount");
-                    setSortOrder(val as "asc" | "desc");
-                    setAmountSort(val as "asc" | "desc");
-                  }}>
+                  <Select
+                    value={amountSort}
+                    onValueChange={(val) => {
+                      setSortField("amount");
+                      setSortOrder(val as "asc" | "desc");
+                      setAmountSort(val as "asc" | "desc");
+                    }}
+                  >
                     <SelectTrigger className="w-20">
                       <SelectValue />
                     </SelectTrigger>
@@ -231,14 +269,24 @@ const Expense = () => {
           <TableBody>
             {expenses.map((expense, index) => (
               <TableRow key={expense._id}>
-                <TableCell className="text-center">{(currentPage - 1) * 10 + (index + 1)}</TableCell>
-                <TableCell>{new Date(expense.date).toLocaleDateString()}</TableCell>
+                <TableCell className="text-center">
+                  {(currentPage - 1) * 10 + (index + 1)}
+                </TableCell>
+                <TableCell>
+                  {new Date(expense.date).toLocaleDateString()}
+                </TableCell>
                 <TableCell>{expense.categoryName}</TableCell>
                 <TableCell>{expense.subcategoryName}</TableCell>
                 <TableCell>{expense.paymentMode}</TableCell>
-                <TableCell className="text-center">₹{expense.amount.toFixed(2)}</TableCell>
                 <TableCell className="text-center">
-                  <Button size="sm" variant="outline" onClick={() => setEditExpense(expense)}>
+                  ₹{expense.amount.toFixed(2)}
+                </TableCell>
+                <TableCell className="text-center">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setEditExpense(expense)}
+                  >
                     <Pencil className="h-4 w-4" />
                   </Button>
                 </TableCell>
@@ -254,18 +302,20 @@ const Expense = () => {
           variant="outline"
           size="sm"
           disabled={currentPage === 1}
-          onClick={() => setCurrentPage(prev => prev - 1)}
+          onClick={() => setCurrentPage((prev) => prev - 1)}
         >
           Prev
         </Button>
 
-        <span>Page {currentPage} of {totalPages}</span>
+        <span>
+          Page {currentPage} of {totalPages}
+        </span>
 
         <Button
           variant="outline"
           size="sm"
           disabled={currentPage === totalPages}
-          onClick={() => setCurrentPage(prev => prev + 1)}
+          onClick={() => setCurrentPage((prev) => prev + 1)}
         >
           Next
         </Button>

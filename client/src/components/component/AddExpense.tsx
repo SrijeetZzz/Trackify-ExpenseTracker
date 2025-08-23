@@ -264,7 +264,6 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
           placeholder="Optional"
           value={desc}
           onChange={(e) => setDesc(e.target.value)}
-          required
         />
       </div>
 

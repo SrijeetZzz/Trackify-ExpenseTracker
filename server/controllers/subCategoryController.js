@@ -31,24 +31,15 @@ export const getSubcategories = async (req, res) => {
         $match: { categoryId: new mongoose.Types.ObjectId(categoryId) }
       });
     }
-
-    // if (userId) {
-    //   pipeline.push({
-    //     $match: { userId: new mongoose.Types.ObjectId(userId) }
-    //   });
-    // }
-
-    // optional populate equivalent (join with Category collection)
     pipeline.push({
       $lookup: {
-        from: "categories",              // collection name in MongoDB
-        localField: "categoryId",        // field in Subcategory
-        foreignField: "_id",             // field in Category
+        from: "categories",             
+        localField: "categoryId",       
+        foreignField: "_id",             
         as: "category"
       }
     });
 
-    // unwind if you want category as single object instead of array
     pipeline.push({ $unwind: "$category" });
 
     const subcategories = await Subcategory.aggregate(pipeline);

@@ -64,69 +64,6 @@ export const createMultipleExpenses = async (req, res) => {
   }
 };
 
-// // get all expenses of a user with pagination
-// export const getExpenses = async (req, res) => {
-//   try {
-//     const userId = req.user.userId;
-//     const page = parseInt(req.query.page) || 1; // default page = 1
-//     const limit = 10;
-//     const skip = (page - 1) * limit;
-
-//     // Count total docs for pagination
-//     const totalDocs = await Expense.countDocuments({ userId });
-
-//     const expenses = await Expense.aggregate([
-//       {
-//         $match: { userId: new mongoose.Types.ObjectId(userId) },
-//       },
-//       {
-//         $lookup: {
-//           from: "categories",
-//           localField: "category",
-//           foreignField: "_id",
-//           as: "result1",
-//         },
-//       },
-//       {
-//         $lookup: {
-//           from: "subcategories",
-//           localField: "subcategory",
-//           foreignField: "_id",
-//           as: "result2",
-//         },
-//       },
-//       { $unwind: "$result1" },
-//       { $unwind: "$result2" },
-//       {
-//         $project: {
-//           _id: 1,
-//           amount: 1,
-//           category: 1,
-//           subcategory: 1,
-//           date: 1,
-//           paid: 1,
-//           paymentMode: 1,
-//           categoryName: "$result1.name",
-//           subcategoryName: "$result2.name",
-//         },
-//       },
-//       { $sort: { date: -1 } },
-//       { $skip: skip },
-//       { $limit: limit },
-//     ]);
-
-//     res.json({
-//       expenses,
-//       currentPage: page,
-//       totalPages: Math.ceil(totalDocs / limit),
-//       totalExpenses: totalDocs,
-//     });
-//   } catch (err) {
-//     res.status(500).json({ message: err.message });
-//   }
-// };
-
-
 // get all expenses of a user with pagination, filtering, and sorting
 export const getExpenses = async (req, res) => {
   try {
