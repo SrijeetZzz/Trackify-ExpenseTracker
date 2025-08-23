@@ -20,6 +20,10 @@ const userschema = new mongoose.Schema({
     phoneNo:{
         type:String,
     },
+     profilePicture: {  
+        type: String,
+        default: null, 
+    },
     refreshToken:{
         type:String,
         default:null

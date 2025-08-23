@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -133,7 +132,7 @@ const handleSubmit = async (e: React.FormEvent) => {
             Already have an account?{" "}
             <Link
               to="/login"
-              className="font-medium text-blue-600 hover:underline"
+              className="font-medium text-gray-800 hover:underline"
             >
               Login
             </Link>

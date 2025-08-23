@@ -99,7 +99,7 @@ const Login: React.FC = () => {
           </Button>
           <p className="text-sm text-center">
             Don’t have an account?{" "}
-            <Link to="/" className="font-medium text-blue-600 hover:underline">
+            <Link to="/signup" className="font-medium text-gray-800 hover:underline">
               Sign Up
             </Link>
           </p>

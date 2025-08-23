@@ -1,8 +1,6 @@
-
-
 const ExpensePlanner = () => {
   return (
-    <div>ExpensePlanner</div>
+    <div>Coming soon.........</div>
   )
 }
 

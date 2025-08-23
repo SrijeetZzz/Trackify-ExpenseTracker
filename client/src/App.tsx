@@ -8,16 +8,37 @@ import ExpensePlanner from "./pages/ExpensePlanner";
 import Categories from "./pages/Catgeories";
 import Settings from "./pages/Settings";
 import Analytics from "./pages/Analytics";
+import EditProfile from "./pages/EditProfile";
+import AboutUs from "./pages/AboutUs";
+import Services from "./pages/Services";
+import ContactUs from "./pages/ContactUs";
+import HomePage from "./pages/Home";
+import ErrorPage from "./pages/ErrorPage";
+import ProtectedRoute from "./components/component/ProtectedRoutes";
 
 function App() {
   return (
     <div className="flex min-h-svh flex-col">
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<SignUp />} />
+          {/* Public Routes */}
+          <Route path="/" element={<HomePage />} />
+          <Route path="/signup" element={<SignUp />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/about" element={<AboutUs />} />
+          <Route path="/contact" element={<ContactUs />} />
+          <Route path="/services" element={<Services />} />
+          <Route path="/error-page" element={<ErrorPage />} />
 
-          <Route path="/:id" element={<Dashboard />}>
+          {/* Protected Routes */}
+          <Route
+            path="/:id"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          >
             <Route path="analytics" element={<Analytics />} />
             <Route path="expense" element={<Expense />} />
             <Route path="splitwise" element={<Splitwise />} />
@@ -25,6 +46,15 @@ function App() {
             <Route path="categories" element={<Categories />} />
             <Route path="settings" element={<Settings />} />
           </Route>
+
+          <Route
+            path="/edit-profile/:id"
+            element={
+              <ProtectedRoute>
+                <EditProfile />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </BrowserRouter>
     </div>

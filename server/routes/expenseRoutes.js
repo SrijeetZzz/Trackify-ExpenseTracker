@@ -1,5 +1,5 @@
 import express from "express";
-import { createExpense, getExpenses, getExpenseById, updateExpense, deleteExpense, createMultipleExpenses } from "../controllers/expenseController.js";
+import { createExpense, getExpenses, getExpenseById, updateExpense, deleteExpense, createMultipleExpenses, getDailyExpenses, getExpensesByCategory, getSubcategoryExpenses } from "../controllers/expenseController.js";
 import { verifyAccessToken } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
@@ -10,5 +10,9 @@ router.get("/get-expenses", verifyAccessToken, getExpenses);
 router.get("/get-expense/:id", verifyAccessToken, getExpenseById);    
 router.put("/update-expense/:id", verifyAccessToken, updateExpense);       
 router.delete("/delete-expense/:id", verifyAccessToken, deleteExpense);    
+
+router.get("/daily-summary", verifyAccessToken, getDailyExpenses);
+router.get("/by-category", verifyAccessToken, getExpensesByCategory);
+router.get("/by-subcategory", verifyAccessToken, getSubcategoryExpenses);
 
 export default router;

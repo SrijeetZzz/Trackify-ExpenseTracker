@@ -1,21 +1,6 @@
-// import Navbar from '@/components/component/Navbar'
-// import SideBar from '@/components/component/SideBar'
-// import React from 'react'
-
-// const Dasboard = () => {
-//   return (
-//     <div>
-//          <Navbar/>
-//         <SideBar/>
-//     </div>
-//   )
-// }
-
-// export default Dasboard
-
 import Navbar from '@/components/component/Navbar'
 import SideBar from '@/components/component/SideBar'
-import React from 'react'
+
 
 const Dashboard = () => {
   return (

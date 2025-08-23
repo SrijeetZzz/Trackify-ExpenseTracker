@@ -71,17 +71,88 @@ export const login = async (req, res) => {
   }
 };
 
+//get user 
+
+export const getUserDetails = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const user = await User.findById(userId).select("-password -refreshToken");
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// UPDATE USER
+export const updateUserDetails = async (req, res) => {
+  try {
+    const userId = req.user.userId; // from token
+    const { username, email, phoneNo, budget } = req.body;
+
+    let updateData = {};
+
+    if (username) updateData.username = username;
+    if (email) updateData.email = email;
+    if (phoneNo) updateData.phoneNo = phoneNo;
+    if (budget !== undefined) updateData.budget = budget;
+
+    // Handle profile picture if uploaded
+    if (req.file) {
+      updateData.profilePicture = `/uploads/${req.file.filename}`; 
+
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { $set: updateData },
+      { new: true }
+    ).select("-password -refreshToken");
+
+    if (!updatedUser) return res.status(404).json({ message: "User not found" });
+
+    res.status(200).json({
+      message: "User updated successfully",
+      user: updatedUser,
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+
+
 //logout
+
+// export const logout = async (req, res) => {
+//   try {
+//     const { refreshToken } = req.body;
+//     if (!refreshToken)
+//       return res.status(400).json({ message: "Refresh token required" });
+
+//     const user = await User.findOne({ refreshToken });
+//     if (!user)
+//       return res.status(403).json({ message: "Invalid refresh token" });
+
+//     user.refreshToken = null;
+//     await user.save();
+
+//     res.json({ message: "Logged out successfully" });
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// };
+
 
 export const logout = async (req, res) => {
   try {
-    const { refreshToken } = req.body;
-    if (!refreshToken)
-      return res.status(400).json({ message: "Refresh token required" });
+    const userId = req.user?.userId;
+    console.log(userId)
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
-    const user = await User.findOne({ refreshToken });
-    if (!user)
-      return res.status(403).json({ message: "Invalid refresh token" });
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
 
     user.refreshToken = null;
     await user.save();

@@ -6,6 +6,7 @@ import categoryRoutes from "./routes/categoryRoutes.js"
 import subCategoryRoutes from "./routes/subCategoryRoutes.js"
 import expenseRoutes from "./routes/expenseRoutes.js"
 import cookieParser from 'cookie-parser';
+import path from "path";
 
 const app = express();
 
@@ -21,5 +22,6 @@ app.use("/api/auth",authRoutes)
 app.use("/api/category",categoryRoutes)
 app.use("/api/subcategory",subCategoryRoutes)
 app.use("/api/expense",expenseRoutes)
+app.use("/uploads", express.static("uploads"));
 
 export default app;

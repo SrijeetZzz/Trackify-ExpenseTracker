@@ -1,5 +1,11 @@
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
-
+import {
+  Calendar,
+  Inbox,
+  Users,
+  ClipboardList,
+  Settings,
+  PieChart,
+} from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -11,26 +17,27 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-
 import React from "react";
 import { Outlet, useParams } from "react-router-dom";
 
 const SideBar: React.FC = () => {
   const { id } = useParams();
+
   const items = [
-    { title: "Dashboard", url: `/${id}/analytics`, icon: Home },
+    { title: "Dashboard", url: `/${id}/analytics`, icon: PieChart },
     { title: "Expense", url: `/${id}/expense`, icon: Inbox },
-    { title: "Splitwise", url: `/${id}/splitwise`, icon: Calendar },
-    { title: "Expense Planner", url: `/${id}/expense-planner`, icon: Search },
-    { title: "Catgeories", url: `/${id}/categories`, icon: Settings },
+    { title: "Splitwise", url: `/${id}/splitwise`, icon: Users },
+    { title: "Expense Planner", url: `/${id}/expense-planner`, icon: Calendar },
+    { title: "Categories", url: `/${id}/categories`, icon: ClipboardList },
     { title: "Settings", url: `/${id}/settings`, icon: Settings },
   ];
+
   return (
     <SidebarProvider>
       <div className="flex">
         {/* Sidebar */}
-        <Sidebar className="top-16">
-          <SidebarContent>
+        <Sidebar className="top-16 w-64 hidden lg:block">
+          <SidebarContent className="bg-gray-900 h-full text-gray-200">
             <SidebarGroup>
               <SidebarGroupContent>
                 <SidebarMenu>
@@ -55,8 +62,11 @@ const SideBar: React.FC = () => {
 
         {/* Main Content */}
         <main className="flex-1 p-4">
-          {/* Sidebar Toggle Button */}
-          <SidebarTrigger className="mb-4" />
+          {/* Sidebar Trigger for small screens */}
+          <div className="lg:hidden mb-4">
+            <SidebarTrigger />
+          </div>
+
           <div className="p-4 border rounded-lg shadow-sm bg-white">
             <Outlet />
           </div>

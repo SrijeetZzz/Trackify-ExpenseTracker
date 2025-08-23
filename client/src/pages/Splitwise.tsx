@@ -1,8 +1,6 @@
-import React from 'react'
-
 const Splitwise = () => {
   return (
-    <div>Splitwise</div>
+    <div>Coming Soon......</div>
   )
 }
 
