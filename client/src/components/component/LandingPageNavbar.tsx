@@ -12,7 +12,7 @@ const LandingPageNavbar = () => {
     <div className="w-full shadow-md bg-white sticky top-0 z-50">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-3">
         {/* Logo */}
-        <a href="#" className="flex items-center gap-2">
+        <a href="/" className="flex items-center gap-2">
           <img src={logo} alt="Logo" className="h-8 w-8" />
           <span className="text-xl font-bold">Trackify</span>
         </a>

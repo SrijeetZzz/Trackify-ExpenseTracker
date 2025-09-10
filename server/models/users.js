@@ -32,6 +32,9 @@ const userschema = new mongoose.Schema({
         type:Number,
         default:0,
         required:false,
+    },
+    addedBy:{
+        type:mongoose.Schema.Types.ObjectId,
     }
 },{
     timestamps:true,

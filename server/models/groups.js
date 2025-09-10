@@ -5,6 +5,7 @@ const groupSchema = new mongoose.Schema(
     grpName: {
       type: String,
       required: true,
+      unique:true,
     },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
@@ -23,10 +24,14 @@ const groupSchema = new mongoose.Schema(
           type: Date,
           default: Date.now(),
         },
+         username: {                  
+          type: String,
+          required: true,
+        },
       },
     ],
   },
   { timestamps: true }
 );
 
-export default mongoose.model("groups", groupSchema);
+export default mongoose.model("Group", groupSchema);

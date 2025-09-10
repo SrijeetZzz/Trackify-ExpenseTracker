@@ -1,3 +1,4 @@
+import RenderNavbar from "@/components/component/RenderNavbar";
 import React, { useState } from "react";
 
 const ContactUs: React.FC = () => {
@@ -23,6 +24,8 @@ const ContactUs: React.FC = () => {
   };
 
   return (
+    <>
+    <RenderNavbar/>
     <div className="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
       {/* Page Header */}
       <div className="text-center mb-12">
@@ -135,6 +138,7 @@ const ContactUs: React.FC = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

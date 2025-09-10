@@ -4,6 +4,8 @@ import bItwo from "../assets/backgroung-image2.jpg";
 import bIthree from "../assets/backgrond-image3.avif";
 import { useNavigate } from "react-router-dom";
 
+import RenderNavbar from "@/components/component/RenderNavbar";
+
 const images = [bIone, bItwo, bIthree];
 
 const AboutUs: React.FC = () => {
@@ -19,6 +21,7 @@ const AboutUs: React.FC = () => {
 
   return (
     <div className="w-full min-h-screen">
+    <RenderNavbar/>
       {/* Slideshow */}
       <div className="relative w-full h-72 sm:h-96 overflow-hidden">
         {images.map((img, idx) => (

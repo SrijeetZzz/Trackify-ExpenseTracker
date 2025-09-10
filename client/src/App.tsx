@@ -15,10 +15,13 @@ import ContactUs from "./pages/ContactUs";
 import HomePage from "./pages/Home";
 import ErrorPage from "./pages/ErrorPage";
 import ProtectedRoute from "./components/component/ProtectedRoutes";
+import Groups from "./pages/Groups";
+import { Toaster } from "./components/ui/toaster";
 
 function App() {
   return (
     <div className="flex min-h-svh flex-col">
+     
       <BrowserRouter>
         <Routes>
           {/* Public Routes */}
@@ -45,6 +48,7 @@ function App() {
             <Route path="expense-planner" element={<ExpensePlanner />} />
             <Route path="categories" element={<Categories />} />
             <Route path="settings" element={<Settings />} />
+            <Route path="groups" element={<Groups/>}/>
           </Route>
 
           <Route
@@ -57,6 +61,7 @@ function App() {
           />
         </Routes>
       </BrowserRouter>
+       <Toaster />
     </div>
   );
 }

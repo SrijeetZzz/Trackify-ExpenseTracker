@@ -17,6 +17,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
+import { Spinner } from "../ui/shadcn-io/spinner"
 
 interface DailyExpense {
   day: string
@@ -62,7 +63,13 @@ const DailyExpenseChart = () => {
     fetchData()
   }, [days])
 
-  if (loading) return <div>Loading chart...</div>
+  if (loading)
+    return (
+      <div className="flex items-center justify-center h-screen w-[1200px]">
+        <Spinner />
+      </div>
+    );
+
 
   return (
     <Card>

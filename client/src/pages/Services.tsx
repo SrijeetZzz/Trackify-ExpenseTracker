@@ -1,3 +1,5 @@
+
+import RenderNavbar from "@/components/component/RenderNavbar";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -43,7 +45,10 @@ const Services: React.FC = () => {
   ];
 
   return (
+    <>
+    <RenderNavbar/>
     <div className="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
+      
       {/* Page Header */}
       <div className="text-center mb-16">
         <h1 className="text-4xl font-extrabold text-gray-900 sm:text-5xl">
@@ -94,6 +99,7 @@ const Services: React.FC = () => {
         </button>
       </div>
     </div>
+    </>
   );
 };
 

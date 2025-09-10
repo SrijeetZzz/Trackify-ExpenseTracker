@@ -19,7 +19,8 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { api } from "../utils/axiosInstance";
-import { Pencil } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
+import { Spinner } from "@/components/ui/shadcn-io/spinner";
 
 interface Expense {
   _id: string;
@@ -130,10 +131,28 @@ const Expense = () => {
     sortOrder,
   ]);
 
-  if (loading) return <div>Loading...</div>;
+  const handleDelete = async (id: string) => {
+    try {
+      await api.delete(`/expense/delete-expense/${id}`);
+      setExpenses((prev) => prev.filter((e) => e._id !== id));
+    } catch (err) {
+      console.error("Error deleting expense:", err);
+    }
+  };
+
+  if (loading)
+    return (
+      <div className="flex items-center justify-center h-screen w-[1200px]">
+        <Spinner />
+      </div>
+    );
 
   return (
     <div className="space-y-6 p-4">
+      <div className="w-full text-center mb-6">
+        <h2 className="text-2xl font-bold tracking-wide">Expense Table</h2>
+        <p className="text-sm text-gray-500">Manage and See your expenses</p>
+      </div>
       <div className="flex justify-between">
         <AddExpense onSuccess={() => fetchExpenses(currentPage)} />
         <AddMultipleExpenses onSuccess={() => fetchExpenses(currentPage)} />
@@ -281,13 +300,23 @@ const Expense = () => {
                 <TableCell className="text-center">
                   ₹{expense.amount.toFixed(2)}
                 </TableCell>
-                <TableCell className="text-center">
+                <TableCell className="flex justify-center gap-2">
+                  {/* Edit button */}
                   <Button
                     size="sm"
                     variant="outline"
                     onClick={() => setEditExpense(expense)}
                   >
                     <Pencil className="h-4 w-4" />
+                  </Button>
+
+                  {/* Delete button */}
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    onClick={() => handleDelete(expense._id)}
+                  >
+                    <Trash2 className="h-4 w-4" />
                   </Button>
                 </TableCell>
               </TableRow>

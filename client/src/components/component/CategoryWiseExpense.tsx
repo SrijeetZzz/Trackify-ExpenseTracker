@@ -23,7 +23,8 @@ import {
 
 import { useState, useEffect } from "react";
 import { api } from "@/utils/axiosInstance";
-import  ChartExpensesBySubcategory  from "./SubCategoryWiseExpense";
+import ChartExpensesBySubcategory from "./SubCategoryWiseExpense";
+import { Spinner } from "../ui/shadcn-io/spinner";
 
 export const description = "User expenses grouped by category";
 
@@ -53,6 +54,7 @@ const ChartExpensesByCategory = () => {
   const [chartData, setChartData] = useState<ExpenseCategoryData[]>([]);
   const [days, setDays] = useState<number>(30);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>("");
+  const [loading, setLoading] = useState(false);
 
   const getCategoryColor = (index: number, total: number) => {
     const lightness = 20 + (index * 60) / total; // spread from 20% to 80%
@@ -60,6 +62,7 @@ const ChartExpensesByCategory = () => {
   };
 
   const fetchExpenses = async (selectedDays = 30) => {
+    setLoading(true);
     try {
       const res = await api.get(`/expense/by-category`, {
         params: { days: selectedDays },
@@ -84,6 +87,8 @@ const ChartExpensesByCategory = () => {
       }
     } catch (err) {
       console.error("Failed to fetch expenses:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -92,6 +97,13 @@ const ChartExpensesByCategory = () => {
   }, [days]);
 
   const totalAmount = chartData.reduce((acc, curr) => acc + curr.amount, 0);
+
+  if (loading)
+    return (
+      <div className="flex items-center justify-center">
+        <Spinner />
+      </div>
+    );
   return (
     <div className="flex flex-col md:flex-row gap-6 w-full">
       {/* Category Chart */}

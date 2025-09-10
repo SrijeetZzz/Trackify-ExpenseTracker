@@ -13,40 +13,77 @@ import { Label } from "@/components/ui/label";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../../utils/auth";
+import { useToast } from "@/hooks/use-toast";
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const { toast } = useToast();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const values = { email, password };
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
 
-    try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", values, { withCredentials: true });
-      if (res.status === 200) {
-        const response = res.data;
-        localStorage.setItem("token", response.accessToken);
-        const auth = useAuth();
-        const id = auth?.userId!;
-        localStorage.setItem("userId",id )
-        const decoded = useAuth(); 
-        if (decoded && decoded.userId) {
-          navigate(`/${decoded.userId}/analytics`);
-        } else {
-          console.error("Invalid token or missing userId");
-        }
+  // ✅ validation before API call
+  if (!email || !password) {
+    toast({
+      variant: "destructive",
+      title: "Missing fields ",
+      description: "Please enter both email and password.",
+    });
+    return;
+  }
+
+  const values = { email, password };
+
+  try {
+    const res = await axios.post(
+      "http://localhost:5000/api/auth/login",
+      values,
+      { withCredentials: true }
+    );
+
+    if (res.status === 200) {
+      const response = res.data;
+      localStorage.setItem("token", response.accessToken);
+
+      const auth = useAuth();
+      const id = auth?.userId!;
+      localStorage.setItem("userId", id);
+
+      toast({
+        title: "Login successful 🎉",
+        description: "Welcome back!",
+      });
+
+      const decoded = useAuth();
+      if (decoded && decoded.userId) {
+        navigate(`/${decoded.userId}/analytics`);
       } else {
-        console.error("Login failed with status:", res.status);
+        toast({
+          variant: "destructive",
+          title: "Authentication error ❌",
+          description: "Invalid token or missing userId.",
+        });
       }
-    } catch (err) {
-      console.error("Login error:", err);
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Login failed ❌",
+        description: `Server returned status ${res.status}`,
+      });
     }
+  } catch (err: any) {
+    toast({
+      variant: "destructive",
+      title: "Login error",
+      description: err?.response?.data?.message || "Something went wrong.",
+    });
+  }
 
-    setEmail("");
-    setPassword("");
-  };
+  setEmail("");
+  setPassword("");
+};
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50">

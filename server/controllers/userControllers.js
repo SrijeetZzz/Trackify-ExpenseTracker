@@ -5,13 +5,14 @@ import {
   generateRefreshToken,
 } from "../utils/generateTokenUtils.js";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 
 //signup
 
 export const signup = async (req, res) => {
   try {
     const { username, email, password } = req.body;
-
+    
     const existingUser = await User.findOne({ email });
     if (existingUser)
       return res.status(400).json({ message: "User already exists" });
@@ -71,7 +72,7 @@ export const login = async (req, res) => {
   }
 };
 
-//get user 
+//get user
 
 export const getUserDetails = async (req, res) => {
   try {
@@ -100,8 +101,7 @@ export const updateUserDetails = async (req, res) => {
 
     // Handle profile picture if uploaded
     if (req.file) {
-      updateData.profilePicture = `/uploads/${req.file.filename}`; 
-
+      updateData.profilePicture = `/uploads/${req.file.filename}`;
     }
 
     const updatedUser = await User.findByIdAndUpdate(
@@ -110,7 +110,8 @@ export const updateUserDetails = async (req, res) => {
       { new: true }
     ).select("-password -refreshToken");
 
-    if (!updatedUser) return res.status(404).json({ message: "User not found" });
+    if (!updatedUser)
+      return res.status(404).json({ message: "User not found" });
 
     res.status(200).json({
       message: "User updated successfully",
@@ -121,54 +122,12 @@ export const updateUserDetails = async (req, res) => {
   }
 };
 
-
-
-//logout
-
-// export const logout = async (req, res) => {
-//   try {
-//     const { refreshToken } = req.body;
-//     if (!refreshToken)
-//       return res.status(400).json({ message: "Refresh token required" });
-
-//     const user = await User.findOne({ refreshToken });
-//     if (!user)
-//       return res.status(403).json({ message: "Invalid refresh token" });
-
-//     user.refreshToken = null;
-//     await user.save();
-
-//     res.json({ message: "Logged out successfully" });
-//   } catch (err) {
-//     res.status(500).json({ message: err.message });
-//   }
-// };
-
-
-export const logout = async (req, res) => {
-  try {
-    const userId = req.user?.userId;
-    console.log(userId)
-    if (!userId) return res.status(401).json({ message: "Unauthorized" });
-
-    const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ message: "User not found" });
-
-    user.refreshToken = null;
-    await user.save();
-
-    res.json({ message: "Logged out successfully" });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
-
 //generate new access token using refresh token
 
 export const refreshToken = async (req, res) => {
   try {
     const refreshToken = req.cookies.refreshToken;
-    console.log(refreshToken)
+    console.log(refreshToken);
     if (!refreshToken)
       return res.status(401).json({ message: "Refresh token missing" });
 
@@ -190,5 +149,57 @@ export const refreshToken = async (req, res) => {
     );
   } catch (err) {
     res.status(500).json({ message: err.message });
+  }
+};
+
+//create or invite new user
+
+export const createUser = async (req, res) => {
+  try {
+    const {username,email,password,phoneNo} = req.body;
+    const userId = req.user?.userId;
+
+    if(!userId) return res.stat(403).json({message:"Unauthorized"});
+
+    const existingUser = await User.findOne({email});
+    if(existingUser) return res.status(404).json({message:"User already exists"});
+
+    const addedByUser = new mongoose.Types.ObjectId(userId);
+
+    const user = new User({
+      username,
+      email,
+      password,
+      phoneNo,
+      addedBy: addedByUser,
+    })
+    await user.save();
+    res.status(200).json({message:"User Created Successfully"});
+  
+  } catch (err) {
+    res.status(500).json({message:err.message});
+  }
+};
+
+
+// get users
+export const getUsers = async (req, res) => {
+  try {
+    const userId = req.user?.userId;
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const users = await User.aggregate([
+      {
+        $match: {
+          addedBy: new mongoose.Types.ObjectId(userId),
+        },
+      },
+    ]);
+
+    return res.status(200).json(users);
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
   }
 };

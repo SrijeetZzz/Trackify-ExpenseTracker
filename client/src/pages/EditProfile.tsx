@@ -6,10 +6,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { api } from "@/utils/axiosInstance";
 import { Camera } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import Navbar from "@/components/component/Navbar";
+import { Spinner } from "@/components/ui/shadcn-io/spinner";
 
 const EditProfile = () => {
   const [user, setUser] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const navigate = useNavigate();
 
@@ -42,6 +44,7 @@ const EditProfile = () => {
   };
 
   const handleSave = async () => {
+    setLoading(true)
     try {
       const token = localStorage.getItem("token");
 
@@ -66,68 +69,71 @@ const EditProfile = () => {
       navigate(-1);
     } catch (err) {
       console.error("Failed to update profile:", err);
+    }finally{
+      setLoading(false)
     }
   };
 
-  if (loading) return <p>Loading...</p>;
-return (
-  <div className="min-h-screen flex items-center justify-center bg-gray-100">
-    <div className="w-[600px] p-8 bg-white shadow-lg rounded-2xl space-y-6">
-      {/* Profile Image Section */}
-      <div className="flex flex-col items-center space-y-2 relative">
-        <Avatar className="w-28 h-28">
-          <AvatarImage
-            src={
-              file
-                ? URL.createObjectURL(file)
-                : user?.profilePicture
-                ? `http://localhost:5000${user.profilePicture}`
-                : undefined
-            }
-            alt={user?.username || "Profile"}
-          />
-          <AvatarFallback>{user?.username?.[0] || "U"}</AvatarFallback>
-        </Avatar>
+  return (
+    <>
+      <Navbar />
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="w-[600px] p-8 bg-white shadow-lg rounded-2xl space-y-6">
+          {/* Profile Image Section */}
+          <div className="flex flex-col items-center space-y-2 relative">
+            <Avatar className="w-28 h-28">
+              <AvatarImage
+                src={
+                  file
+                    ? URL.createObjectURL(file)
+                    : user?.profilePicture
+                    ? `http://localhost:5000${user.profilePicture}`
+                    : undefined
+                }
+                alt={user?.username || "Profile"}
+              />
+              <AvatarFallback>{user?.username?.[0] || "U"}</AvatarFallback>
+            </Avatar>
 
-        {/* Upload Button */}
-        <label className="absolute bottom-0 right-[40%] bg-blue-500 p-2 rounded-full cursor-pointer hover:bg-blue-600">
-          <Camera className="text-white w-4 h-4" />
-          <input
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={handleFileChange}
-          />
-        </label>
-      </div>
+            {/* Upload Button */}
+            <label className="absolute bottom-0 right-[40%] bg-blue-500 p-2 rounded-full cursor-pointer hover:bg-blue-600">
+              <Camera className="text-white w-4 h-4" />
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleFileChange}
+              />
+            </label>
+          </div>
 
-      {/* Form */}
-      <div className="space-y-4">
-        <div>
-          <Label>Username</Label>
-          <Input
-            name="username"
-            value={user?.username || ""}
-            onChange={handleInputChange}
-          />
-        </div>
-        <div>
-          <Label>Email</Label>
-          <Input
-            name="email"
-            value={user?.email || ""}
-            onChange={handleInputChange}
-          />
-        </div>
-        <div>
-          <Label>Phone Number</Label>
-          <Input
-            name="phoneNo"
-            value={user?.phoneNo || ""}
-            onChange={handleInputChange}
-          />
-        </div>
-        <div>
+          {/* Form */}
+          <div className="space-y-4">
+            <div>
+              <Label>Username</Label>
+              <Input
+                name="username"
+                value={user?.username || ""}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div>
+              <Label>Email</Label>
+              <Input
+                name="email"
+                value={user?.email || ""}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div>
+              <Label>Phone Number</Label>
+              <Input
+                name="phoneNo"
+                value={user?.phoneNo || ""}
+                onChange={handleInputChange}
+              />
+            </div>
+            {/* <div>
           <Label>Budget</Label>
           <Input
             type="number"
@@ -135,16 +141,17 @@ return (
             value={user?.budget || 0}
             onChange={handleInputChange}
           />
+        </div> */}
+          </div>
+
+          {/* Save Button */}
+          <Button onClick={handleSave} className="w-full" disabled={loading} >
+            {loading ? <Spinner /> : "Save Changes"}
+          </Button>
         </div>
       </div>
-
-      {/* Save Button */}
-      <Button onClick={handleSave} className="w-full">
-        Save Changes
-      </Button>
-    </div>
-  </div>
-);
+    </>
+  );
 };
 
 export default EditProfile;

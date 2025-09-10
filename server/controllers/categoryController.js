@@ -27,7 +27,7 @@ export const getCategories = async (req, res) => {
   }
 };
 
-// // Update category by id
+// Update category by id
 export const updateCategory = async (req, res) => {
   try {
     const { id } = req.params;

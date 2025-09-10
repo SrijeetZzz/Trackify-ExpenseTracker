@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../../utils/auth";
+import { useToast } from "@/hooks/use-toast";
 
 const SignUp: React.FC = () => {
   const [fname, setFname] = useState("");
@@ -19,39 +20,66 @@ const SignUp: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  const values = { email, password, fname, lname };
+  const { toast } = useToast();
 
-  try {
-    const res = await axios.post(
-      "http://localhost:5000/api/auth/signup",
-      values,
-      { withCredentials: true }
-    );
-
-    if (res.status === 200) {
-      const response = res.data;
-      localStorage.setItem("token", response.accessToken);
-      const decoded = useAuth();
-      if (decoded && decoded.userId) {
-        navigate(`/${decoded.userId}/analytics`);
-      } else {
-        console.error("Invalid token or missing userId");
-      }
-    } else {
-      console.error("SignUp failed with status:", res.status);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!fname || !lname || !email || !password) {
+      toast({
+        variant: "destructive",
+        title: "Missing fields",
+        description: "Please fill in all required fields.",
+      });
+      return;
     }
-  } catch (err) {
-    console.error("Signup error:", err);
-  }
+    const values = { email, password, fname, lname };
 
-  setEmail("");
-  setPassword("");
-  setFname("");
-  setLname("");
-};
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/api/auth/signup",
+        values,
+        { withCredentials: true }
+      );
 
+      if (res.status === 200) {
+        const response = res.data;
+        localStorage.setItem("token", response.accessToken);
+
+        toast({
+          title: "Signup successful ",
+          description: "Your account has been created.",
+        });
+
+        const decoded = useAuth();
+        if (decoded && decoded.userId) {
+          navigate(`/${decoded.userId}/analytics`);
+        } else {
+          toast({
+            variant: "destructive",
+            title: "Authentication error ",
+            description: "Invalid token or missing userId.",
+          });
+        }
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Signup failed ",
+          description: `Server returned status ${res.status}`,
+        });
+      }
+    } catch (err: any) {
+      toast({
+        variant: "destructive",
+        title: "Signup error",
+        description: err?.response?.data?.message || "Something went wrong.",
+      });
+    }
+
+    setEmail("");
+    setPassword("");
+    setFname("");
+    setLname("");
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50">

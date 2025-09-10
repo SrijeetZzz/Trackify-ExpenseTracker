@@ -18,6 +18,7 @@ import {
 
 import { useState, useEffect } from "react";
 import { api } from "@/utils/axiosInstance";
+import { Spinner } from "../ui/shadcn-io/spinner";
 
 interface ExpenseSubcategoryData {
   subcategory: string;
@@ -33,13 +34,15 @@ interface Props {
 const ChartExpensesBySubcategory = ({ categoryId, days }: Props) => {
   const [chartData, setChartData] = useState<ExpenseSubcategoryData[]>([]);
   const [totalAmount, setTotalAmount] = useState<number>(0);
-  
+  const [loading, setLoading] = useState(false);
+
   const getCategoryColor = (index: number, total: number) => {
     const lightness = 20 + (index * 60) / total; // spread from 20% to 80%
     return `hsl(0, 0%, ${lightness}%)`; // 0° hue and 0% saturation → greyscale
   };
 
   const fetchSubcategoryExpenses = async () => {
+    setLoading(true);
     try {
       const res = await api.get(`/expense/by-subcategory`, {
         params: { categoryId, days },
@@ -56,12 +59,21 @@ const ChartExpensesBySubcategory = ({ categoryId, days }: Props) => {
       );
     } catch (err) {
       console.error("Failed to fetch subcategory expenses:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     if (categoryId) fetchSubcategoryExpenses();
   }, [categoryId, days]);
+
+  if (loading)
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <Spinner />
+      </div>
+    );
 
   return (
     <Card className="flex flex-col h-[520px]">

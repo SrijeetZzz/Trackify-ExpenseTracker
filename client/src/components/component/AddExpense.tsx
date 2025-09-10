@@ -19,6 +19,8 @@ import {
 } from "@/components/ui/select";
 import { useEffect, useState } from "react";
 import { api } from "@/utils/axiosInstance";
+import { Spinner } from "../ui/shadcn-io/spinner";
+import { useToast } from "@/hooks/use-toast";
 
 interface Expense {
   _id: string;
@@ -93,6 +95,10 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
   onSuccess,
   selectedExpense = null,
 }) => {
+  const formattedDate = selectedExpense?.date
+    ? new Date(selectedExpense.date).toISOString().split("T")[0]
+    : "";
+
   const paymentMethod = ["Cash", "Card", "UPI", "Other"];
   const [categories, setCategories] = useState<any[]>([]);
   const [subcategories, setSubcategories] = useState<any[]>([]);
@@ -105,7 +111,7 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
   const [subcategory, setSubcategory] = useState<string>(
     selectedExpense?.subcategory || ""
   );
-  const [date, setDate] = useState(selectedExpense?.date || "");
+  const [date, setDate] = useState(formattedDate || "");
   const [desc, setDesc] = useState(selectedExpense?.desc || "");
   const [paymentMode, setPaymentMode] = useState(
     selectedExpense?.paymentMode || ""
@@ -113,21 +119,27 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
   const [paid, setPaid] = useState(
     selectedExpense ? selectedExpense.paid === "Paid" : true
   );
-
+  const [loading, setLoading] = useState(false);
   const userId = localStorage.getItem("userId");
   const token = localStorage.getItem("token");
+  const { toast } = useToast();
+
 
   const fetchCategories = async () => {
+    setLoading(true);
     if (!token) return;
     try {
       const res = await api.get(`/category/get-categories`);
       setCategories(res.data || []);
     } catch (err) {
       console.error("Failed to fetch categories:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
   const fetchSubcategories = async () => {
+     setLoading(true);
     if (!token || !category) return;
     try {
       const res = await api.get(
@@ -136,6 +148,8 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
       setSubcategories(res.data || []);
     } catch (err) {
       console.error("Failed to fetch subcategories:", err);
+    }finally {
+      setLoading(false);
     }
   };
 
@@ -146,40 +160,61 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
   useEffect(() => {
     fetchSubcategories();
   }, [category, token]);
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setLoading(true);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const expenseData = {
-      amount,
-      category,
-      subcategory,
-      date,
-      desc,
-      paid,
-      paymentMode,
-      userId,
-    };
-
-    try {
-      if (!token) throw new Error("No token found");
-
-      if (selectedExpense) {
-        // Update existing expense
-        await api.put(
-          `/expense/update-expense/${selectedExpense._id}`,
-          expenseData
-        );
-      } else {
-        // Create new expense
-        await api.post("/expense/create-expense", expenseData);
-      }
-
-      onSuccess?.();
-      setOpen(false);
-    } catch (err) {
-      console.error("Failed to save expense:", err);
-    }
+  const expenseData = {
+    amount,
+    category,
+    subcategory,
+    date,
+    desc,
+    paid,
+    paymentMode,
+    userId,
   };
+
+  try {
+    if (!token) {
+      toast({
+        variant: "destructive",
+        title: "Authentication error ❌",
+        description: "No token found. Please log in again.",
+      });
+      throw new Error("No token found");
+    }
+
+    if (selectedExpense) {
+      await api.put(
+        `/expense/update-expense/${selectedExpense._id}`,
+        expenseData
+      );
+      toast({
+        title: "Expense updated ✅",
+        description: "Your expense has been updated successfully.",
+      });
+    } else {
+      await api.post("/expense/create-expense", expenseData);
+      toast({
+        title: "Expense created 🎉",
+        description: "Your expense has been added successfully.",
+      });
+    }
+
+    onSuccess?.();
+    setOpen(false);
+  } catch (err: any) {
+    console.error("Failed to save expense:", err);
+    toast({
+      variant: "destructive",
+      title: "Error saving expense ❌",
+      description: err?.response?.data?.message || "Something went wrong.",
+    });
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <form
@@ -210,15 +245,19 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
             }}
             required
           >
-            <SelectTrigger>
+            <SelectTrigger className="flex items-center justify-between">
               <SelectValue placeholder="Select category" />
             </SelectTrigger>
             <SelectContent>
-              {categories.map((cat) => (
-                <SelectItem key={cat._id} value={cat._id}>
-                  {cat.name}
-                </SelectItem>
-              ))}
+              {loading ? (
+                <Spinner/>
+              ) : (
+                categories.map((cat) => (
+                  <SelectItem key={cat._id} value={cat._id}>
+                    {cat.name}
+                  </SelectItem>
+                ))
+              )}
             </SelectContent>
           </Select>
         </div>
@@ -235,12 +274,16 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
               <SelectValue placeholder="Select subcategory" />
             </SelectTrigger>
             <SelectContent>
-              {category &&
+              {loading ? (
+                <Spinner/>
+              ) : (
+              category &&
                 subcategories.map((sub) => (
                   <SelectItem key={sub._id} value={sub._id}>
                     {sub.name}
                   </SelectItem>
-                ))}
+                ))
+                )}
             </SelectContent>
           </Select>
         </div>
@@ -298,8 +341,14 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
         </Label>
       </div>
 
-      <Button type="submit">
-        {selectedExpense ? "Update Expense" : "Save Expense"}
+      <Button type="submit" disabled={loading}>
+        {loading ? (
+          <Spinner />
+        ) : selectedExpense ? (
+          "Update Expense"
+        ) : (
+          "Save Expense"
+        )}
       </Button>
     </form>
   );

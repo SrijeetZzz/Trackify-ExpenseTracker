@@ -17,7 +17,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { api } from "@/utils/axiosInstance";
-import { Trash2 } from "lucide-react"; 
+import { Trash2 } from "lucide-react";
+import { Spinner } from "../ui/shadcn-io/spinner";
+import { useToast } from "@/hooks/use-toast";
 
 interface ExpenseRow {
   amount: number | "";
@@ -52,18 +54,29 @@ const AddMultipleExpenses: React.FC<{ onSuccess?: () => void }> = ({
   const userId = localStorage.getItem("userId");
   const token = localStorage.getItem("token");
   const paymentMethod = ["Cash", "Card", "UPI", "Other"];
+  const [loading, setLoading] = useState(false);
+  const {toast} = useToast();
 
   // Fetch categories
   const fetchCategories = async () => {
+    setLoading(true);
     if (!token) return;
-    const res = await api.get("/category/get-categories");
-    setCategories(res.data || []);
+    try {
+      const res = await api.get(`/category/get-categories`);
+      setCategories(res.data || []);
+    } catch (err) {
+      console.error("Failed to fetch categories:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Fetch subcategories for all categories
   const fetchSubcategories = async () => {
+    setLoading(true);
     if (!token) return;
-    const map: Record<string, any[]> = {};
+    try{
+      const map: Record<string, any[]> = {};
     for (let cat of categories) {
       const res = await api.get(
         `/subcategory/get-subcategories?categoryId=${cat._id}`
@@ -71,6 +84,11 @@ const AddMultipleExpenses: React.FC<{ onSuccess?: () => void }> = ({
       map[cat._id] = res.data || [];
     }
     setSubcategoriesMap(map);
+    }catch(err){
+      console.log(err)
+    }finally{
+      setLoading(false)
+    }
   };
 
   useEffect(() => {
@@ -110,35 +128,67 @@ const AddMultipleExpenses: React.FC<{ onSuccess?: () => void }> = ({
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!token || !userId) return;
+  e.preventDefault();
+  setLoading(true);
 
-    try {
-      // Apply single date to all expenses
-      const expensesWithDate = expenses.map((exp) => ({ ...exp, date }));
-      console.log(expensesWithDate);
-      const res = await api.post("/expense/create-multiple-expenses", {
-        expenses: expensesWithDate,
-        userId,
-      });
-      console.log("Expenses added:", res.data);
-      setExpenses([
-        {
-          amount: "",
-          category: "",
-          subcategory: "",
-          paymentMode: "",
-          paid: true,
-          desc: "",
-        },
-      ]);
-      setDate("");
-      setOpen(false);
-      onSuccess?.();
-    } catch (err) {
-      console.error("Failed to add expenses:", err);
-    }
-  };
+  if (!token || !userId) {
+    toast({
+      variant: "destructive",
+      title: "Authentication error ❌",
+      description: "Please log in to add expenses.",
+    });
+    setLoading(false);
+    return;
+  }
+
+  if (!expenses.length || !date) {
+    toast({
+      variant: "destructive",
+      title: "Missing data ❌",
+      description: "Please fill in expenses and date before submitting.",
+    });
+    setLoading(false);
+    return;
+  }
+
+  try {
+    // Apply single date to all expenses
+    const expensesWithDate = expenses.map((exp) => ({ ...exp, date }));
+
+    await api.post("/expense/create-multiple-expenses", {
+      expenses: expensesWithDate,
+      userId,
+    });
+
+    toast({
+      title: "Expenses added 🎉",
+      description: `${expensesWithDate.length} expense(s) have been added successfully.`,
+    });
+
+    setExpenses([
+      {
+        amount: "",
+        category: "",
+        subcategory: "",
+        paymentMode: "",
+        paid: true,
+        desc: "",
+      },
+    ]);
+    setDate("");
+    setOpen(false);
+    onSuccess?.();
+  } catch (err: any) {
+    console.error("Failed to add expenses:", err);
+    toast({
+      variant: "destructive",
+      title: "Error adding expenses ❌",
+      description: err?.response?.data?.message || "Something went wrong.",
+    });
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -190,11 +240,15 @@ const AddMultipleExpenses: React.FC<{ onSuccess?: () => void }> = ({
                       <SelectValue placeholder="Category" />
                     </SelectTrigger>
                     <SelectContent>
-                      {categories.map((cat) => (
-                        <SelectItem key={cat._id} value={cat._id}>
-                          {cat.name}
-                        </SelectItem>
-                      ))}
+                      {loading ? (
+                        <Spinner />
+                      ) : (
+                        categories.map((cat) => (
+                          <SelectItem key={cat._id} value={cat._id}>
+                            {cat.name}
+                          </SelectItem>
+                        ))
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
@@ -281,7 +335,9 @@ const AddMultipleExpenses: React.FC<{ onSuccess?: () => void }> = ({
               <Button type="button" onClick={addExpenseRow}>
                 + Add Row
               </Button>
-              <Button type="submit">Save All Expenses</Button>
+              <Button type="submit" disabled={loading}>
+                {loading ? <Spinner /> : "Save Expense"}
+              </Button>
             </div>
           </form>
         </div>

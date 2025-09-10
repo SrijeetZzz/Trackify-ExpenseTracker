@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Plus, Layers, Users, Calendar } from "lucide-react";
+import { Menu, X, Plus, Layers, Users, Calendar, Group } from "lucide-react";
 import logo from "../../assets/Trackify.png";
 import { useNavigate } from "react-router-dom";
 import { api } from "@/utils/axiosInstance";
@@ -42,7 +42,7 @@ const Navbar = () => {
   };
 
   return (
-    <div className="w-full shadow-md bg-white sticky top-0 z-50">
+    <div className="w-full shadow-md bg-white fixed top-0 left-0 z-50">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-3">
         {/* Logo */}
         <a href="/" className="flex items-center gap-2">
@@ -116,9 +116,9 @@ const Navbar = () => {
                 <Button
                   variant="outline"
                   className="flex items-center justify-center gap-1"
-                  onClick={() => handleAction("expense-planner")}
+                  onClick={() => handleAction("groups")}
                 >
-                  <Calendar className="w-4 h-4" /> Planner
+                  <Group className="w-4 h-4" /> Groups
                 </Button>
               </div>
             )}

@@ -1,10 +1,11 @@
 import {
-  Calendar,
+  // Calendar,
   Inbox,
   Users,
   ClipboardList,
-  Settings,
+  // Settings,
   PieChart,
+  Group,
 } from "lucide-react";
 import {
   Sidebar,
@@ -27,9 +28,11 @@ const SideBar: React.FC = () => {
     { title: "Dashboard", url: `/${id}/analytics`, icon: PieChart },
     { title: "Expense", url: `/${id}/expense`, icon: Inbox },
     { title: "Splitwise", url: `/${id}/splitwise`, icon: Users },
-    { title: "Expense Planner", url: `/${id}/expense-planner`, icon: Calendar },
+    { title: "Groups", url: `/${id}/groups`, icon: Group },
+    // { title: "Expense Planner", url: `/${id}/expense-planner`, icon: Calendar },
     { title: "Categories", url: `/${id}/categories`, icon: ClipboardList },
-    { title: "Settings", url: `/${id}/settings`, icon: Settings },
+    // { title: "Settings", url: `/${id}/settings`, icon: Settings },
+
   ];
 
   return (
