@@ -13,7 +13,7 @@ import path from "path";
 const app = express();
 
 app.use(cors({
-  origin: "http://localhost:5173", // explicitly allow your frontend origin
+  origin: "https://trackify-expense-tracker.vercel.app", // explicitly allow your frontend origin
   credentials: true               // allow cookies/credentials
 }));
 app.use(express.json());
