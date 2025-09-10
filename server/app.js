@@ -19,9 +19,13 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: function(origin, callback){
+    if(!origin) return callback(null, true);
+
     if(allowedOrigins.indexOf(origin) === -1){
+      console.warn(`Blocked CORS request from origin: ${origin}`);
       return callback(new Error("CORS not allowed for this origin"), false);
     }
+
     return callback(null, true);
   },
   credentials: true
