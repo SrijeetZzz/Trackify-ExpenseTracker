@@ -3,7 +3,6 @@ import AddCategoryDialog from "@/components/component/AddCategory";
 import AddSubCategoryDialog from "@/components/component/AddSubcategory";
 import { api } from "@/utils/axiosInstance";
 import ChartExpensesByCategory from "@/components/component/CategoryWiseExpense";
-import { Spinner } from "@/components/ui/shadcn-io/spinner";
 
 const Categories = () => {
   const [categories, setCategories] = useState<any[]>([]);
