@@ -89,7 +89,7 @@ const EditProfile = () => {
                   file
                     ? URL.createObjectURL(file)
                     : user?.profilePicture
-                    ? `${API_URL} ${user.profilePicture}`
+                    ? `${API_URL}${user.profilePicture}`
                     : undefined
                 }
                 alt={user?.username || "Profile"}
