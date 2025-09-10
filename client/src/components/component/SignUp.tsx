@@ -13,6 +13,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../../utils/auth";
 import { useToast } from "@/hooks/use-toast";
+const API_URL = import.meta.env.VITE_API_URL;
 
 const SignUp: React.FC = () => {
   const [fname, setFname] = useState("");
@@ -21,6 +22,7 @@ const SignUp: React.FC = () => {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
   const { toast } = useToast();
+  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,7 +38,7 @@ const SignUp: React.FC = () => {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/auth/signup",
+        `${API_URL}/api/auth/signup`,
         values,
         { withCredentials: true }
       );

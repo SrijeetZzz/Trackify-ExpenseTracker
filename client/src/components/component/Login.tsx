@@ -14,6 +14,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../../utils/auth";
 import { useToast } from "@/hooks/use-toast";
+const API_URL = import.meta.env.VITE_API_URL; 
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -38,7 +39,7 @@ const handleSubmit = async (e: React.FormEvent) => {
 
   try {
     const res = await axios.post(
-      "http://localhost:5000/api/auth/login",
+      `${API_URL}/api/auth/login`,
       values,
       { withCredentials: true }
     );
