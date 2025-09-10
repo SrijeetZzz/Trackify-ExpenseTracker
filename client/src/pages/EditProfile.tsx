@@ -8,12 +8,14 @@ import { Camera } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/component/Navbar";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
+  const API_URL = import.meta.env.VITE_API_URL; 
 
 const EditProfile = () => {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const navigate = useNavigate();
+
 
   // Fetch user info on mount
   useEffect(() => {
@@ -87,7 +89,7 @@ const EditProfile = () => {
                   file
                     ? URL.createObjectURL(file)
                     : user?.profilePicture
-                    ? `http://localhost:5000${user.profilePicture}`
+                    ? `${API_URL} ${user.profilePicture}`
                     : undefined
                 }
                 alt={user?.username || "Profile"}

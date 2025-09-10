@@ -5,6 +5,7 @@ import { Menu, X, Plus, Layers, Users, Calendar, Group } from "lucide-react";
 import logo from "../../assets/Trackify.png";
 import { useNavigate } from "react-router-dom";
 import { api } from "@/utils/axiosInstance";
+const API_URL = import.meta.env.VITE_API_URL; 
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -133,7 +134,7 @@ const Navbar = () => {
               <AvatarImage
                 src={
                   user?.profilePicture
-                    ? `http://localhost:5000${user.profilePicture}`
+                    ? `${API_URL}${user.profilePicture}`
                     : undefined
                 }
                 alt={user?.username || "Profile"}
